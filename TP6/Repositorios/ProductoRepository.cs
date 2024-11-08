@@ -3,12 +3,12 @@ using Microsoft.Data.Sqlite;
 using Models;
 
 
-public class ProductoRepository : IRepository<Productos>
+public class ProductoRepository : IRepository<Producto>
 {
     private readonly string cadenaDeConexion = "Data Source=bd/Tienda.db;Cache=Shared";
 
     //Inserto un producto.
-    public void Insertar(Productos prod)
+    public void Insertar(Producto prod)
     {
         using(var connection = new SqliteConnection(cadenaDeConexion))
         {
@@ -24,7 +24,7 @@ public class ProductoRepository : IRepository<Productos>
     }
 
     //Modifico un producto existente.
-    public void Modificar(int id, Productos prod)
+    public void Modificar(int id, Producto prod)
     {
         using(var connection = new SqliteConnection(cadenaDeConexion))
         {
@@ -41,9 +41,9 @@ public class ProductoRepository : IRepository<Productos>
     }
 
     //Listo los productos registrados.
-    public List<Productos> Listar()
+    public List<Producto> Listar()
     {
-        List<Productos> listaProd = new List<Productos>();
+        List<Producto> listaProd = new List<Producto>();
         using (var connection = new SqliteConnection(cadenaDeConexion))
         {
             connection.Open();
@@ -55,7 +55,7 @@ public class ProductoRepository : IRepository<Productos>
             {
                 while(reader.Read())
                 {
-                    var prod = new Productos();
+                    var prod = new Producto();
                     prod.IdProducto = Convert.ToInt32(reader["idProducto"]);
                     prod.Descripcion = reader["Descripcion"].ToString();
                     prod.Precio = Convert.ToInt32(reader["Precio"]);
@@ -68,9 +68,9 @@ public class ProductoRepository : IRepository<Productos>
     }
 
     //Obtengo detalles del producto.
-    public Productos Obtener(int id)
+    public Producto Obtener(int id)
     {
-        var prod = new Productos();
+        var prod = new Producto();
 
         using (var connection = new SqliteConnection(cadenaDeConexion))
         {
@@ -96,7 +96,7 @@ public class ProductoRepository : IRepository<Productos>
     }
 
 //Elimino un producto.
-    void IRepository<Productos>.Eliminar(int id)
+    void IRepository<Producto>.Eliminar(int id)
     {
         using (var connection = new SqliteConnection(cadenaDeConexion))
         {

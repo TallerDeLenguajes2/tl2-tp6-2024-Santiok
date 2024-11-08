@@ -1,14 +1,14 @@
 namespace Models;
-public class PresupuestosDetalles
+public class PresupuestoDetalles
 {
-    private Productos producto;
+    private Producto producto;
     private int cantidad;
 
-    public Productos Producto { get => producto; set => producto = value; }
+    public Producto Producto { get => producto; set => producto = value; }
     public int Cantidad { get => cantidad; set => cantidad = value; }
 
     //Constructores.
-    public PresupuestosDetalles(Productos produ, int cant)
+    public PresupuestoDetalles(Producto produ, int cant)
     {
         this.producto = produ;
         this.Cantidad = cant;

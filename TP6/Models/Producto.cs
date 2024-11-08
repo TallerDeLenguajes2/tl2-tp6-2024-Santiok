@@ -1,5 +1,5 @@
 namespace Models;
-public class Productos
+public class Producto
 {
     private int idProducto;
     private string? descripcion;
@@ -11,14 +11,14 @@ public class Productos
     public int Precio { get => precio; set => precio = value; }
 
     //Constructores.
-    public Productos()
+    public Producto()
     {
         idProducto = -1;
         descripcion = string.Empty;
         precio = 0;
     }
 
-    public Productos(int id, string descrip, int prec)
+    public Producto(int id, string descrip, int prec)
     {
         this.idProducto = id;
         this.descripcion = descrip;

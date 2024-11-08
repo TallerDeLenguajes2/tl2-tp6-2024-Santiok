@@ -1,26 +1,26 @@
 namespace Models;
-public class Presupuestos
+public class Presupuesto
 {
     public static double IVA = 0.21;
     private int idPresupuesto;
     private string nombreDestinatario;
-    private List<PresupuestosDetalles> detalle;
+    private List<PresupuestoDetalles> detalle;
     private string fechaCreacion;
 
     public int IdPresupuesto { get => idPresupuesto; set => idPresupuesto = value; }
     public string NombreDestinatario { get => nombreDestinatario; set => nombreDestinatario = value; }
-    public List<PresupuestosDetalles> Detalle { get => detalle; set => detalle = value; }
+    public List<PresupuestoDetalles> Detalle { get => detalle; set => detalle = value; }
     public string FechaCreacion { get => fechaCreacion; set => fechaCreacion = value; }
 
     //Constructores.
-    public Presupuestos()
+    public Presupuesto()
     {
         idPresupuesto = -1;
         nombreDestinatario = string.Empty;
-        detalle = new List<PresupuestosDetalles>();
+        detalle = new List<PresupuestoDetalles>();
         fechaCreacion = string.Empty;
     }
-    public Presupuestos(int idPresupuesto, string nombreDestinatario, List<PresupuestosDetalles> detalle)
+    public Presupuesto(int idPresupuesto, string nombreDestinatario, List<PresupuestoDetalles> detalle)
     {
         this.idPresupuesto = idPresupuesto;
         this.nombreDestinatario = nombreDestinatario;
