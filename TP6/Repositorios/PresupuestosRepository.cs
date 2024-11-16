@@ -88,36 +88,73 @@ public class PresupuestosRepository : IRepository<Presupuesto>
     //Obtener presupuestos. ----?
     public Presupuesto ObtenerPresupuestos(int id)
     {
-       var pres = new Presupuesto();
-       var detalles = new List<PresupuestoDetalles>(); 
+       using(var connection = new SqliteConnection(cadenaDeConexion))
+       {
+        connection.Open();
 
-        using (var connection = new SqliteConnection(cadenaDeConexion))
+        string queryPresupuesto = "SELECT idPresupuesto,NombreDestinatario FROM Presupuestos WHERE idPresupuesto = @idPresupuesto";
+
+        SqliteCommand commandPresupuesto = new SqliteCommand(queryPresupuesto, connection);
+
+        commandPresupuesto.Parameters.AddWithValue("@idPresupuesto",id);
+
+        using(SqliteDataReader reader = commandPresupuesto.ExecuteReader())
         {
-            connection.Open();
-
-            string query = @"SELECT idPresupuesto, NombreDestinatario, idProducto, Cantidad FROM Presupuestos p
-                        INNER JOIN PresupuestosDetalle pd USING(idPresupuesto)
-                        WHERE p.idPresupuesto = @id_pasado;";
-
-            SqliteCommand command = new SqliteCommand(query, connection);
-            command.Parameters.AddWithValue("$id_pasado", id);
-
-            using (SqliteDataReader reader = command.ExecuteReader())
+            while (reader.Reead())
             {
-                while (reader.Read())
+                int idPresupuesto = reader.GetInt32(0);
+                string nombreDestinatario = reader.GetString(1);
+                List<PresupuestoDetalle> detalles = new List<PresupuestoDetalle>();
+
+                string queryDetalles = @"SELECT idProducto,Descripcion,Precio,Cantidad FROM PresupuestosDetalle
+                        INNER JOIN Productos USING(idProducto)
+                        WHERE idPresupuesto = @idPresupuesto";   
+
+                SqliteCommand commandDetalles = new SqliteCommand(queryDetalles, connection);  
+                commandDetalles.Parameters.AddWithValue("@idPresupuesto",idPresupuesto);
+
+                using (SqliteDataReader reader2 = commandDetalles.ExecuteReader())
                 {
-                    /*
-                    var producto = new Producto(sqlReader.GetInt32(3), sqlReader.GetString(4), sqlReader.GetInt32(5));
-                    var detalle = new PresupuestoDetalles(sqlReader.GetInt32(6), producto);
-                    pres.Detalle.Add(detalle);
-                    */
+                    while (reader2.Read())
+                    {
+                        Productos p = new Productos(reader2.GetInt32(0),reader2.GetString(1),reader2.GetInt32(2));
+                        detalles.Add(new PresupuestoDetalle(p,reader2.GetInt32(3)));
+                    }
                 }
+                presupuesto = new Presupuesto(idPresupuesto,nombreDestinatario, detalles);    
             }
-
-            connection.Close();
         }
-        return pres;
-    }
+        connection.Close();
+       }
+        return presupuesto;
     }
 
+    //Agregar producto y una cantidad.
+    public bool AgregarProductoYCantidad(int idPresupuesto,int idProducto,int cantidad)
+    {
+        try
+        {
+            using(var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                string query = "INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, cantidad) VALUES (@idPresupuesto, @idProducto, @cantidad);";
+
+                var command = new SqliteCommand(query, connection);
+
+                command.Parameters.AddWithValue("@idPresupuesto",idPresupuesto);
+                command.Parameters.AddWithValue("@idProducto",idProducto);
+                command.Parameters.AddWithValue("@cantidad",cantidad);
+
+                int filasAfectadas = command.ExecuteNonQuery();
+                connection.Close();
+            }
+            return true;
+        }
+        catch (SqliteException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        return false;
+    }
+    }
 
