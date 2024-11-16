@@ -88,6 +88,8 @@ public class PresupuestosRepository : IRepository<Presupuesto>
     //Obtener presupuestos. ----?
     public Presupuesto ObtenerPresupuestos(int id)
     {
+        Presupuesto presupuesto = new Presupuesto();
+
        using(var connection = new SqliteConnection(cadenaDeConexion))
        {
         connection.Open();
@@ -100,11 +102,11 @@ public class PresupuestosRepository : IRepository<Presupuesto>
 
         using(SqliteDataReader reader = commandPresupuesto.ExecuteReader())
         {
-            while (reader.Reead())
+            while (reader.Read())
             {
                 int idPresupuesto = reader.GetInt32(0);
                 string nombreDestinatario = reader.GetString(1);
-                List<PresupuestoDetalle> detalles = new List<PresupuestoDetalle>();
+                List<PresupuestoDetalles> detalles = new List<PresupuestoDetalles>();
 
                 string queryDetalles = @"SELECT idProducto,Descripcion,Precio,Cantidad FROM PresupuestosDetalle
                         INNER JOIN Productos USING(idProducto)
@@ -117,8 +119,8 @@ public class PresupuestosRepository : IRepository<Presupuesto>
                 {
                     while (reader2.Read())
                     {
-                        Productos p = new Productos(reader2.GetInt32(0),reader2.GetString(1),reader2.GetInt32(2));
-                        detalles.Add(new PresupuestoDetalle(p,reader2.GetInt32(3)));
+                        Producto p = new Producto(reader2.GetInt32(0),reader2.GetString(1),reader2.GetInt32(2));
+                        detalles.Add(new PresupuestoDetalles(p,reader2.GetInt32(3)));
                     }
                 }
                 presupuesto = new Presupuesto(idPresupuesto,nombreDestinatario, detalles);    
@@ -134,7 +136,7 @@ public class PresupuestosRepository : IRepository<Presupuesto>
     {
         try
         {
-            using(var connection = new SqliteConnection(connectionString))
+            using(var connection = new SqliteConnection(cadenaDeConexion))
             {
                 connection.Open();
                 string query = "INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, cantidad) VALUES (@idPresupuesto, @idProducto, @cantidad);";
@@ -156,5 +158,12 @@ public class PresupuestosRepository : IRepository<Presupuesto>
         }
         return false;
     }
+
+
+    ////////////////////////////////
+    public Presupuesto Obtener(int id)
+    {
+        throw new NotImplementedException();
     }
+}
 
