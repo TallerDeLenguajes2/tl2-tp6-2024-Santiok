@@ -3,110 +3,135 @@ using Microsoft.Data.Sqlite;
 using Models;
 
 
-public class ProductoRepository : IRepository<Producto>
+public class ProductoRepository : IProductoRepository
 {
-    private readonly string cadenaDeConexion = "Data Source=bd/Tienda.db;Cache=Shared";
+    private string cadenaDeConexion;
 
-    //Inserto un producto.
-    public void Insertar(Producto prod)
+    public ProductoRepository(string cadena)
     {
-        using(var connection = new SqliteConnection(cadenaDeConexion))
-        {
-            connection.Open();
-
-            string query = "INSERT INTO Productos (Descripcion, Precio) VALUES ($desc, $precio)";
-            SqliteCommand command = new SqliteCommand(query, connection);
-            command.Parameters.AddWithValue("$desc", prod.Descripcion);
-            command.Parameters.AddWithValue("$precio", prod.Precio);
-
-            connection.Close();
-        }
+        this.cadenaDeConexion = cadena;
     }
 
-    //Modifico un producto existente.
-    public void Modificar(int id, Producto prod)
+    public bool CrearProducto(Producto producto)
     {
-        using(var connection = new SqliteConnection(cadenaDeConexion))
+        string query = "INSERT INTO Productos (Descripcion, Precio) VALUES (@descripcion, @precio)";
+        int cantidadFilas = 0;
+
+        using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
         {
-            connection.Open();
-
-            string query = "UPDATE Productos(Descripcion, Precio) VALUES ($desc, $precio) WHERE idProductos = $id_pasado;";
-            SqliteCommand command = new SqliteCommand(query, connection);
-            command.Parameters.AddWithValue("$desc", prod.Descripcion);
-            command.Parameters.AddWithValue("$precio", prod.Precio);
-            command.Parameters.AddWithValue("$id_pasado", prod.IdProducto);
-
-            connection.Close();
+            conexion.Open();
+            SqliteCommand command = new SqliteCommand(query, conexion);
+            command.Parameters.Add(new SqliteParameter("@descripcion", producto.Descripcion));
+            command.Parameters.Add(new SqliteParameter("@precio", producto.Precio));
+            cantidadFilas = command.ExecuteNonQuery();
+            conexion.Close();
         }
+        return cantidadFilas > 0;
     }
 
-    //Listo los productos registrados.
-    public List<Producto> Listar()
+    public bool ModificarProducto(int id, Producto producto)
     {
-        List<Producto> listaProd = new List<Producto>();
-        using (var connection = new SqliteConnection(cadenaDeConexion))
+        string query = "UPDATE Productos (Descripcion, Precio) VALUES (@descripcion, @precio) WHERE idProducto = @id";
+        int cantidadFilas = 0;
+
+        using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
         {
-            connection.Open();
-
-            string query = "SELECT * FROM Productos;";
-            SqliteCommand command = new SqliteCommand(query, connection);
-
-            using (SqliteDataReader reader = command.ExecuteReader())
-            {
-                while(reader.Read())
-                {
-                    var prod = new Producto();
-                    prod.IdProducto = Convert.ToInt32(reader["idProducto"]);
-                    prod.Descripcion = reader["Descripcion"].ToString();
-                    prod.Precio = Convert.ToInt32(reader["Precio"]);
-                    listaProd.Add(prod);
-                }
-            }
-            connection.Close();
+            conexion.Open();
+            SqliteCommand command = new SqliteCommand(query, conexion);
+            command.Parameters.Add(new SqliteParameter("@descripcion", producto.Descripcion));
+            command.Parameters.Add(new SqliteParameter("@precio", producto.Precio));
+            command.Parameters.Add(new SqliteParameter("@id", id));
+            cantidadFilas = command.ExecuteNonQuery();
+            conexion.Close();
         }
-        return listaProd;
+        return cantidadFilas > 0;
     }
 
-    //Obtengo detalles del producto.
-    public Producto Obtener(int id)
+    public bool ModificarNombre(int id, string nuevoNom)
     {
-        var prod = new Producto();
+        string query =  "UPDATE Productos SET Descripcion = @descripcion WHERE idProducto = @id";;
+        int cantidadFilas = 0;
 
-        using (var connection = new SqliteConnection(cadenaDeConexion))
+        using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
         {
-            connection.Open();
+            conexion.Open();
+            SqliteCommand command = new SqliteCommand(query, conexion);
+            command.Parameters.Add(new SqliteParameter("@descripcion", nuevoNom));
+            command.Parameters.Add(new SqliteParameter("@id", id));
+            cantidadFilas = command.ExecuteNonQuery();
+            conexion.Close();
+        }
+        return cantidadFilas > 0;
+    }
 
-            string query = "SELECT * FROM Productos WHERE idProductos = $id_pasado;";
-            SqliteCommand command = new SqliteCommand(query, connection);
-            command.Parameters.AddWithValue("$id_pasado", prod.IdProducto);
+    public List<Producto> ListarProductos()
+    {
+        string query = "SELECT * FROM Productos";
+        List<Producto> listaProductos = new List<Producto>();
+
+        using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
+        {
+            conexion.Open();
+            SqliteCommand command = new SqliteCommand(query, conexion);
 
             using (SqliteDataReader reader = command.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    prod.IdProducto = Convert.ToInt32(reader["idProducto"]);
-                    prod.Descripcion = reader["Descripcion"].ToString();
-                    prod.Precio = Convert.ToInt32(reader["Precio"]);
+                    Producto producto = new Producto();
+                    producto.IdProducto = Convert.ToInt32(reader["idProducto"]);
+                    producto.Descripcion = reader["Descripcion"].ToString();
+                    producto.Precio = Convert.ToInt32(reader["Precio"]);
+                    listaProductos.Add(producto);
                 }
             }
-
-            connection.Close();
+            conexion.Close();
         }
-        return prod;
+        return listaProductos;
     }
 
-//Elimino un producto.
-    void IRepository<Producto>.Eliminar(int id)
+    public Producto ObtenerProductoPorId(int id)
     {
-        using (var connection = new SqliteConnection(cadenaDeConexion))
+        string query = "SELECT * FROM Productos WHERE id = @id";
+        Producto producto = null;
+
+        using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
         {
-            connection.Open();
+            conexion.Open();
+            SqliteCommand command = new SqliteCommand(query, conexion);
+            command.Parameters.Add(new SqliteParameter("@id", id));
 
-            string query = "DELETE FROM Productos WHERE idProductos = $id_pasado;";
-            SqliteCommand command = new SqliteCommand(query, connection);
-            command.Parameters.AddWithValue("$id_pasado", id);
-
-            connection.Close();
+            using (SqliteDataReader reader = command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    producto = new Producto
+                    {
+                        IdProducto = Convert.ToInt32(reader["idProducto"]),
+                        Descripcion = reader["Descripcion"].ToString(),
+                        Precio = Convert.ToInt32(reader["Precio"])
+                    };
+                }
+            }
+            conexion.Close();
         }
+        return producto;
     }
+
+    public bool EliminarProducto(int id)
+    {
+        string query = "DELETE FROM Productos WHERE id = @id";
+        int cantidadFilas = 0;
+
+        using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
+        {
+            conexion.Open();
+            SqliteCommand command = new SqliteCommand(query, conexion);
+            command.Parameters.Add(new SqliteParameter("@id", id));
+            cantidadFilas = command.ExecuteNonQuery();
+            conexion.Close();
+        }
+        return cantidadFilas > 0;
+    }
+
 }

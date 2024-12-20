@@ -11,13 +11,18 @@ public class Producto
     public int Precio { get => precio; set => precio = value; }
 
     //Constructores.
+    /*
     public Producto()
     {
         idProducto = -1;
         descripcion = string.Empty;
         precio = 0;
     }
-
+    */
+    public Producto()
+    {
+        
+    }
     public Producto(int id, string descrip, int prec)
     {
         this.idProducto = id;
