@@ -31,7 +31,7 @@ public class ProductoRepository : IProductoRepository
 
     public bool ModificarProducto(int id, Producto producto)
     {
-        string query = "UPDATE Productos (Descripcion, Precio) VALUES (@descripcion, @precio) WHERE idProducto = @id";
+        string query = "UPDATE Productos SET Descripcion = @descripcion, Precio = @precio WHERE idProducto = @id";
         int cantidadFilas = 0;
 
         using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
@@ -92,7 +92,7 @@ public class ProductoRepository : IProductoRepository
 
     public Producto ObtenerProductoPorId(int id)
     {
-        string query = "SELECT * FROM Productos WHERE id = @id";
+        string query = "SELECT * FROM Productos WHERE idProducto = @id";
         Producto producto = null;
 
         using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
@@ -120,7 +120,7 @@ public class ProductoRepository : IProductoRepository
 
     public bool EliminarProducto(int id)
     {
-        string query = "DELETE FROM Productos WHERE id = @id";
+        string query = "DELETE FROM Productos WHERE idProducto = @id";
         int cantidadFilas = 0;
 
         using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))

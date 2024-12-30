@@ -54,11 +54,12 @@ public class ProductoController : Controller
     [HttpGet]
     public IActionResult EliminarProducto(int id)
     {
-        return View(productoRepository.EliminarProducto(id));
+        return View(productoRepository.ObtenerProductoPorId(id));
+        
     }
 
 
-    [HttpPost]
+    //[HttpDelete]Con esto no funciona, pero porque?.
     public IActionResult ConfirmarEliminacion(int id)
     {
         productoRepository.EliminarProducto(id);
