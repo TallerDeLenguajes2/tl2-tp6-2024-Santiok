@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Presupuesto";
+}
+@model List<Models.Presupuesto> 
+
+<div class="text-center">
+    <h1 class="display-4">Listado de presupuesto</h1>
+</div>
+<table class="table table-primary table-striped">
+    <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Nombre destinatario</th>
+      <th scope="col">Fecha de creación</th>
+      <th scope="col">Monto total</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+
+    @using Models;
+    
+    @foreach(var presupuesto in Model)
+    {
+        <tr>
+            <th scope="row">@presupuesto.IdPresupuesto</th>
+            <td>@presupuesto.NombreDestinatario</td>
+            <td>@presupuesto.FechaCreacion</td>
+            <td>$@presupuesto.MontoPresupuestoConIva()</td>
+            <td><button type="button" class="btn btn-primary"><a class="nav-link text-light" asp-area="" asp-controller="Presupuesto" asp-action="ModificarPresupuesto" asp-route-id="@presupuesto.IdPresupuesto">Modificar</a></button></td>
+            <td><button type="button" class="btn btn-danger"><a class="nav-link text-light" asp-area="" asp-controller="Presupuesto" asp-action="EliminarPresupuesto" asp-route-id="@presupuesto.IdPresupuesto">Eliminar</a></button></td>
+            <td><button type="button" class="btn btn-info"><a class="nav-link text-light" asp-area="" asp-controller="Presupuesto" asp-action="MostrarPresupuestoDetalle" asp-route-id="@presupuesto.IdPresupuesto">Detalle</a></button></td>
+            <td><button type="button" class="btn btn-success"><a class="nav-link text-light" asp-area="" asp-controller="Presupuesto" asp-action="AgregarProducto" asp-route-id="@presupuesto.IdPresupuesto">Agregar Producto</a></button></td>
+        </tr>
+    }
+  </tbody>
+</table>
+<div class="text-center">
+    <button type="button" class="btn btn-success"><a   class="nav-link text-light" asp-area="" asp-controller="Presupuesto" asp-action="CrearPresupuesto">Agregar presupuesto a la lista</a></button>
+</div>

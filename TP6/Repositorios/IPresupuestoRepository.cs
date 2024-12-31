@@ -7,5 +7,8 @@ public interface IPresupuestoRepository
     public Presupuesto ObtenerPresupuestoPorId(int id);
     public bool AgregarProductoAPresupuesto(int id, int idProducto, int cantidad);
     public bool EliminarPresupuesto(int id);
+    public bool ModificarPresupuesto(int id, Presupuesto nuevoPresupuesto);
+    public List<PresupuestosDetalles> ListarDetallePresupuesto(int idPresupuesto);
+    public void CrearNuevoDetalle(PresupuestosDetalles detalles);
 
 }

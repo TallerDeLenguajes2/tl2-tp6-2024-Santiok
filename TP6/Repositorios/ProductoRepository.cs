@@ -12,6 +12,10 @@ public class ProductoRepository : IProductoRepository
         this.cadenaDeConexion = cadena;
     }
 
+    public ProductoRepository()
+    {
+    }
+
     public bool CrearProducto(Producto producto)
     {
         string query = "INSERT INTO Productos (Descripcion, Precio) VALUES (@descripcion, @precio)";
